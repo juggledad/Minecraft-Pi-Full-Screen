@@ -10,3 +10,7 @@ The settings that seem to work best are:
 - hdmi_group=2
 - hdmi_mode=14
 
+# Directions
+copy the code to your Pi and type:
+# sh mfs/mfs-setup.sh
+and follow the directions.
