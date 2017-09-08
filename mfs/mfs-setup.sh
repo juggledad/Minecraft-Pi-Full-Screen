@@ -137,8 +137,8 @@ cat <<EOT > /tmp/tmpworkfile
 
 # settings to reduce the screen resolution to run Minecraft Pi full screen
 hdmi_safe=0
-hdmi-group=$hg
-hdmi-mode=$hm
+hdmi_group=$hg
+hdmi_mode=$hm
 EOT
 cat /tmp/tmpworkfile >> /home/pi/mfs/config.mfs
 
