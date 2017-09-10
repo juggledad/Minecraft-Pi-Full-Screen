@@ -28,9 +28,12 @@ echo  "Raspberry Pi Mindcraft Full Screen (mfs) setup script\n"
 # ====================================
 # 1 - report the users IP address
 # ====================================
-echo "Please make note of your IP address(es) for use with SSH."
-echo "If you have problems, you can SSH into the Pi and rerun the script"
-echo "using the the format: ssh pi@yourIPaddress"
+echo "Please make note of your IP address(es) for use with SSH. If you have"
+echo "problems, you can SSH into the Pi and rerun the script using the format:"
+echo "\nssh pi@yourIPaddress\n"
+echo "or you can power down the Pi, remove the SD card, put it in a card reader" echo "attach it to your Mac or PC. Then you can delete the 'config.txt' file,"
+echo "rename 'config.boot' to 'config.txt', unmount the card, put it back in the"
+echo "Pi and power the Pi on. This wil get you back to your original settings."
 hostname -I
 read -p "Did you write your IP address down? (y/N) ? " yn
 case $yn in
@@ -55,42 +58,39 @@ sudo update-rc.d ssh enable
 #echo "Check for the mfs directory" 
 if [ ! -d /home/pi/mfs ]; 
 then
-        echo "the directory does not exist - please reinstall"
-        exit
+    mkdir mfs
 fi
-
 # ====================================
-# 4 - has /boot/config.txt been copied to the mfs directory, if not copy it
+# 4 - has /boot/config.txt been backed up, if not copy it
 # ====================================
 #echo "backup /boot/config.txt " 
-if [ ! -f /home/pi/mfs/config.boot ];
+if [ ! -f /boot/config.boot ];
 then
-	cp /boot/config.txt /home/pi/mfs/config.boot
-	echo "config.txt backed up to /home/pi/mfs/config.boot"
+    sudo bash -c "sudo cat /boot/config.txt > /boot/config.boot"
+    echo "/boot/config.txt backed up to /boot/config.boot"
+else
+    read -p "Do you want to restore the original settings? (y/N) ? " yn
+    case $yn in
+      [Yy]* )
+        sudo bash -c "sudo cat /boot/config.boot > /boot/config.txt"
+        echo "Reboot to use the original configuration"
+        exit
+      ;;
+      * )
+      ;;
+    esac
+
+    read -p "Do you want to use the stored Minecraft Full Screen settings? (y/N) ? " yn
+    case $yn in
+      [Yy]* )
+        sudo bash -c "sudo cat /boot/config.mfs > /boot/config.txt"
+        echo "Reboot to use the full screen configuration"
+        exit
+      ;;
+      * )
+      ;;
+    esac
 fi
-
-read -p "Do you want to restore the original settings? (y/N) ? " yn
-case $yn in
-  [Yy]* )
-    sudo bash -c "sudo cat /home/pi/mfs/config.boot > /boot/config.txt"
-    echo "Reboot to use the original configuration"
-    exit
-  ;;
-  * )
-  ;;
-esac
-
-read -p "Do you want to use the stored Minecraft Full Screen settings? (y/N) ? " yn
-case $yn in
-  [Yy]* )
-    sudo bash -c "sudo cat /home/pi/mfs/config.mfs > /boot/config.txt"
-    echo "Reboot to use the full screen configuration"
-    exit
-  ;;
-  * )
-  ;;
-esac
-
 # ====================================
 # 5 - change the /boot/config.txt file to adjust the screen resolution
 # to allow Minecraft Pi to fill the screen by reducing the screen resolution.
@@ -131,8 +131,8 @@ while true; do
     esac
 done
 
-cd /home/pi/mfs
-cat /home/pi/mfs/config.boot > /home/pi/mfs/config.mfs
+
+cat /boot/config.boot > /home/pi/mfs/config.mfs
 cat <<EOT > /tmp/tmpworkfile
 
 # settings to reduce the screen resolution to run Minecraft Pi full screen
