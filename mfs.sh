@@ -38,7 +38,9 @@ echo "or you can power down the Pi, remove the SD card, put it in a card reader"
 echo "attach it to your Mac or PC. Then you can delete the 'config.txt' file,"
 echo "rename 'config.boot' to 'config.txt', unmount the card, put it back in the"
 echo "Pi and power the Pi on. This wil get you back to your original settings."
+echo " "
 hostname -I
+echo " "
 read -p "Did you write your IP address down? (y/N) ? " yn
 case $yn in
   [Yy]* )
