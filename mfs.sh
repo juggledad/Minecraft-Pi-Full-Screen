@@ -23,15 +23,19 @@
 # to allow Minecraft Pi to fill the screen by reducing the screen resolution.
 #
 
-echo  "Raspberry Pi Mindcraft Full Screen (mfs) setup script\n"
+echo "Raspberry Pi Mindcraft Full Screen (mfs) setup script"
+echo " "
 
 # ====================================
 # 1 - report the users IP address
 # ====================================
 echo "Please make note of your IP address(es) for use with SSH. If you have"
 echo "problems, you can SSH into the Pi and rerun the script using the format:"
-echo -e "\nssh pi@yourIPaddress\n"
-echo "or you can power down the Pi, remove the SD card, put it in a card reader" echo "attach it to your Mac or PC. Then you can delete the 'config.txt' file,"
+echo " "
+echo "ssh pi@yourIPaddress"
+echo " "
+echo "or you can power down the Pi, remove the SD card, put it in a card reader" 
+echo "attach it to your Mac or PC. Then you can delete the 'config.txt' file,"
 echo "rename 'config.boot' to 'config.txt', unmount the card, put it back in the"
 echo "Pi and power the Pi on. This wil get you back to your original settings."
 hostname -I
@@ -40,7 +44,7 @@ case $yn in
   [Yy]* )
   ;;
   * )
-    echo -e "\nPlease make note of your IP address(es) and re-run this script.\r\n"
+    echo "Please make note of your IP address(es) and re-run this script."
     exit
   ;;
 esac
@@ -48,9 +52,9 @@ esac
 # ====================================
 # 2 - turning on SSH
 # ====================================
-#echo "Enabling SSH -----------\n"
+#echo "Enabling SSH -----------"
 sudo update-rc.d ssh enable
-#echo "Enabling SSH completed -----------\n"
+#echo "Enabling SSH completed -----------"
 
 # ====================================
 # 3 - check for the '/home/pi/mfs' directory and create it if it doesn't exist
@@ -99,7 +103,7 @@ fi
 echo "Enter the hdmi_group (1 or 2) and the hdmi_mode" 
 echo "  for hdmi_group 1, the hdmi_mode can be from 1 to 59"
 echo "  for hdmi_group 2, the hdmi_mode can be from 1 to 86" 
-echo "(for details see: https://www.raspberrypi.org/documentation/configuration/config-txt/video.md)\n" 
+echo "(for details see: https://www.raspberrypi.org/documentation/configuration/config-txt/video.md)" 
 echo "To run  Minecraft full screen on a TV with HDMI in or on a computer monitor"
 echo "try hdmi_group 2 and hdmi_mode 14"
  
@@ -145,4 +149,5 @@ cat /tmp/tmpworkfile >> /home/pi/mfs/config.mfs
 sudo rm /tmp/tmpworkfile
 sudo bash -c "sudo cat /home/pi/mfs/config.mfs > /boot/config.txt"
 
-echo -e "\nAll done - reboot for changes to take effect"
+echo " "
+echo "All done - reboot for changes to take effect"
