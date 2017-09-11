@@ -18,8 +18,9 @@
 # 1 - report the users IP address
 # 2 - turning on SSH
 # 3 - check for the '/home/pi/mfs' directory and create it if it doesn't exist
-# 4 - has /boot/config.txt been copied to the mfs directory, if not copy it
-# 5 - change the /boot/config.txt file to adjust the screen resolution
+# 4 - check for the '/home/pi/mfs.mfs.sh' file, create it if it doesn't exist
+# 5 - has /boot/config.txt been copied to the /boot directory, if not copy it
+# 6 - change the /boot/config.txt file to adjust the screen resolution
 # to allow Minecraft Pi to fill the screen by reducing the screen resolution.
 #
 
@@ -43,12 +44,12 @@ hostname -I
 echo " "
 read -p "Did you write your IP address down? (y/N) ? " yn
 case $yn in
-  [Yy]* )
-  ;;
-  * )
-    echo "Please make note of your IP address(es) and re-run this script."
-    exit
-  ;;
+	[Yy]* )
+	;;
+	* )
+		echo "Please make note of your IP address(es) and re-run this script."
+		exit
+	;;
 esac
 
 # ====================================
@@ -64,79 +65,96 @@ sudo update-rc.d ssh enable
 #echo "Check for the mfs directory" 
 if [ ! -d /home/pi/mfs ]; 
 then
-    mkdir mfs
+	mkdir mfs
 fi
+
 # ====================================
-# 4 - has /boot/config.txt been backed up, if not copy it
+# 4 - check for the '/home/pi/mfs/mfs.sh' file and copy it if it doesn't exist
+# ====================================
+#echo "Check for the mfs.sh file" 
+if [ ! -f /home/pi/mfs/mfs.sh ]; 
+then
+	curl https://raw.githubusercontent.com/juggledad/Minecraft-Pi-Full-Screen/master/mfs.sh > /home/pi/mfs/mfs.sh 
+fi
+
+# ====================================
+# 5 - has /boot/config.txt been backed up, if not copy it
 # ====================================
 #echo "backup /boot/config.txt " 
 if [ ! -f /boot/config.boot ];
 then
-    sudo bash -c "sudo cat /boot/config.txt > /boot/config.boot"
-    echo "/boot/config.txt backed up to /boot/config.boot"
+	sudo bash -c "sudo cat /boot/config.txt > /boot/config.boot"
+	echo "/boot/config.txt backed up to /boot/config.boot"
 else
-    read -p "Do you want to restore the original settings? (y/N) ? " yn
-    case $yn in
-      [Yy]* )
-        sudo bash -c "sudo cat /boot/config.boot > /boot/config.txt"
-        echo "Reboot to use the original configuration"
-        exit
-      ;;
-      * )
-      ;;
-    esac
+	read -p "Do you want to restore the original settings? (y/N) ? " yn
+	case $yn in
+		[Yy]* )
+			sudo bash -c "sudo cat /boot/config.boot > /boot/config.txt"
+			echo "Reboot to use the original configuration"
+			exit
+		;;
+		* )
+		;;
+	esac
 
-    read -p "Do you want to use the stored Minecraft Full Screen settings? (y/N) ? " yn
-    case $yn in
-      [Yy]* )
-        sudo bash -c "sudo cat /boot/config.mfs > /boot/config.txt"
-        echo "Reboot to use the full screen configuration"
-        exit
-      ;;
-      * )
-      ;;
-    esac
+	read -p "Do you want to use the stored Minecraft Full Screen settings? (y/N) ? " yn
+	case $yn in
+		[Yy]* )
+			sudo bash -c "sudo cat /boot/config.mfs > /boot/config.txt"
+			echo "Reboot to use the full screen configuration"
+			exit
+		;;
+		* )
+		;;
+	esac
 fi
 # ====================================
-# 5 - change the /boot/config.txt file to adjust the screen resolution
+# 6 - change the /boot/config.txt file to adjust the screen resolution
 # to allow Minecraft Pi to fill the screen by reducing the screen resolution.
 # ====================================
-#echo '5 - Updating config.txt'
+#echo '6 - Updating config.txt'
 echo "Enter the hdmi_group (1 or 2) and the hdmi_mode" 
 echo "  for hdmi_group 1, the hdmi_mode can be from 1 to 59"
 echo "  for hdmi_group 2, the hdmi_mode can be from 1 to 86" 
 echo "(for details see: https://www.raspberrypi.org/documentation/configuration/config-txt/video.md)" 
 echo "To run  Minecraft full screen on a TV with HDMI in or on a computer monitor"
 echo "try hdmi_group 2 and hdmi_mode 14"
- 
+echo ""
 while true; do
-	read -p "Enter hdmi_group (1 or 2) ? " hg
-	case $hg in
-      [12]* )
-      break;;
-      * )
-      ;;
-    esac
+	read -p "Use the defaults: group=2, mode=14 (y/n)? " dg
+	case $dg in
+		[Yy]* )
+			hg=2
+			hm=14
+			break
+		;;
+		* ) 
+		while true; do
+			read -p "Enter hdmi_group (1 or 2) ? " hg
+			case $hg in
+			  [12]* )
+			  break;;
+			  * )
+			  ;;
+			esac
+		done
+
+		while true; do
+			if [ $hg = 1 ];
+			then
+				read -p "Enter hdmi_mode (1 thru 59) ? " hm
+				break
+			fi
+			if [ $hg = 2 ]; 
+			then
+				read -p "Enter hdmi_mode (1 thru 86) ? " hm
+				break
+			fi
+		done
+		break
+		;;
+	esac
 done
-
-while true; do
-        if [ $hg = 1 ];
-        then
-          read -p "Enter hdmi_mode (1 thru 59) ? " hm
-        fi
-        if [ $hg = 2 ]; 
-        then
-          read -p "Enter hdmi_mode (1 thru 86) ? " hm
-        fi
-
-        case $hg in
-      [12]* )
-      break;;
-      * )
-      ;; 
-    esac
-done
-
 
 cat /boot/config.boot > /home/pi/mfs/config.mfs
 cat <<EOT > /tmp/tmpworkfile
@@ -153,3 +171,6 @@ sudo bash -c "sudo cat /home/pi/mfs/config.mfs > /boot/config.txt"
 
 echo " "
 echo "All done - reboot for changes to take effect"
+echo "You can rerun this script from the mfs directory using:"
+echo "     sh /home/pi/mfs/mfs.sh"
+echo "to swap 'full screen' <=> 'orginal settings' or recreate the full screen settings"
