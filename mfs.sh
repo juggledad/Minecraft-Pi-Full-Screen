@@ -23,6 +23,9 @@
 # 6 - change the /boot/config.txt file to adjust the screen resolution
 # to allow Minecraft Pi to fill the screen by reducing the screen resolution.
 #
+# for first run, just enter (without the leading '#')
+# bash <(curl -sL https://raw.githubusercontent.com/juggledad/Minecraft-Pi-Full-Screen/master/mfs.sh)
+
 
 echo "Raspberry Pi Mindcraft Full Screen (mfs) setup script"
 echo " "
